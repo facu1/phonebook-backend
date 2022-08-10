@@ -28,6 +28,18 @@ app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  
+  const person = persons.find((person) => person.id === id)
+
+  if (person) {
+    return response.json(person)
+  }
+
+  response.status(404).end()
+})
+
 app.get('/info', (request, response) => {
   const { length: amountOfPeople } = persons
   const actualTime = new Date()
