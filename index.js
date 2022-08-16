@@ -83,21 +83,26 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (persons.some(({name: personName}) => personName === name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
+  Person
+    .find({})
+    .then((people) => {
+      if (people.some(({name: personName}) => personName === name)) {
+        return response.status(400).json({
+          error: 'name must be unique'
+        })
+      }
+
+      const person = new Person({
+        name,
+        number
+      })
+      
+      person
+        .save()
+        .then((savedPerson) => {
+          response.json(savedPerson)
+        })
     })
-  }
-
-  const person = {
-    id: generateId(),
-    name,
-    number
-  }
-
-  persons = [...persons, person]
-
-  response.json(person)
 })
 
 app.get('/info', (request, response) => {
