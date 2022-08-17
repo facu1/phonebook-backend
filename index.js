@@ -96,26 +96,15 @@ const generateId = () => Math.floor(Math.random() * 10000)
 app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
 
-  Person
-    .find({})
-    .then((people) => {
-      if (people.some(({name: personName}) => personName === name)) {
-        return response.status(400).json({
-          error: 'name must be unique'
-        })
-      }
-
-      const person = new Person({
-        name,
-        number
-      })
-      
-      person
-        .save()
-        .then((savedPerson) => {
-          response.json(savedPerson)
-        })
-        .catch((error) => next(error))
+  const person = new Person({
+    name,
+    number
+  })
+  
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson)
     })
     .catch((error) => next(error))
 })
@@ -137,11 +126,15 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({
-      error: 'malformatted id'
+      error: 'Malformatted id'
     })
   } else if (error.name === 'ValidationError') {
     return response.status(400).send({
       error: error.message
+    })
+  } else if (error.name === 'MongoServerError') {
+    return response.status(400).send({
+      error: 'Name must be unique'
     })
   }
 
