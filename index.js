@@ -121,11 +121,16 @@ app.post('/api/persons', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.get('/info', (request, response) => {
-  const { length: amountOfPeople } = persons
-  const actualTime = new Date()
-  const responseMsg = `<p>Phonebook has info for ${amountOfPeople} people</p><p>${actualTime}</p>`
-  response.send(responseMsg)
+app.get('/info', (request, response, next) => {
+  Person
+    .find({})
+    .then((people) => {
+      const { length: amountOfPeople } = people
+      const actualTime = new Date()
+      const responseMsg = `<p>Phonebook has info for ${amountOfPeople} people</p><p>${actualTime}</p>`
+      response.send(responseMsg)
+    })
+    .catch((error) => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
