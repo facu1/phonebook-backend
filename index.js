@@ -7,40 +7,17 @@ const app = express()
 
 app.use(express.json())
 
-morgan.token('data-sent', (req, res) => {
+morgan.token('data-sent', (req) => {
   return JSON.stringify(req.body)
 })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data-sent', {
-  skip: (req, res) => req.method !== 'POST'
+  skip: (req) => req.method !== 'POST'
 }))
 
-app.use(morgan('tiny', { skip: (req, res) => req.method === 'POST' }))
+app.use(morgan('tiny', { skip: (req) => req.method === 'POST' }))
 
 app.use(cors())
-
-let persons = [
-  {
-    "id": 1,
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": 2,
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": 3,
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": 4,
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
 
 app.use(express.static('build'))
 
@@ -68,7 +45,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.delete('/api/persons/:id', (request, response, next) => {
   Person
     .findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end()
     })
     .catch((error) => next(error))
@@ -91,8 +68,6 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-const generateId = () => Math.floor(Math.random() * 10000)
-
 app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
 
@@ -100,7 +75,7 @@ app.post('/api/persons', (request, response, next) => {
     name,
     number
   })
-  
+
   person
     .save()
     .then((savedPerson) => {
@@ -145,5 +120,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`)
 })
